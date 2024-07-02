@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.nextit.ditto.noticeboard.NoticeBoardMapper">
+    <resultMap id="noticeBoardResultMap" type="noticeBoardVO">
+        <id property="noticeBoardNo" column="NOTICE_BOARD_NO"/> <!-- 게시판 번호 매핑 -->
+        <result property="memberId" column="MEMBER_ID"/> <!-- 회원 ID 매핑 -->
+        <result property="noticeTitle" column="NOTICE_TITLE"/> <!-- 게시물 제목 매핑 -->
+        <result property="noticeContent" column="NOTICE_CONTENT"/> <!-- 게시물 내용 매핑 -->
+        <result property="hits" column="HITS"/> <!-- 조회수 매핑 -->
+        <result property="createDate" column="CREATE_DATE"/> <!-- 등록 시간 매핑 -->
+        <result property="modifyDate" column="MODIFY_DATE"/> <!-- 수정 시간 매핑 -->
+        <result property="status" column="STATUS"/> <!-- 상태 매핑 -->
+        <result property="announcement" column="ANNOUNCEMENT"/> <!-- 공지 등록 여부 매핑 -->
+        <result property="commentCount" column="COMMENT_COUNT"/> <!-- 댓글 개수 -->
+    </resultMap>
+
+    <!-- 모든 게시물을 조회하는 SQL 쿼리 -->
+    <select id="getBoardList" resultMap="noticeBoardResultMap">
+        SELECT
+            a.NOTICE_BOARD_NO,
+            a.MEMBER_ID,
+            a.NOTICE_TITLE,
+            a.NOTICE_CONTENT,
+            a.HITS,
+            a.CREATE_DATE,
+            a.MODIFY_DATE,
+            a.STATUS,
+            a.ANNOUNCEMENT
+        FROM
+            NOTICE_BOARD a
+        WHERE
+            a.STATUS = 'Y'
+        ORDER BY
+            a.CREATE_DATE DESC
+        LIMIT
+            #{firstRecordIndex}, #{pageNumListSize}
+    </select>
+
+<!--  전체 게시글 개수 조회  -->
+    <select id="getBoardListCount" parameterType="searchVO" resultType="int">
+        SELECT
+            COUNT(NOTICE_BOARD_NO)
+        FROM
+            NOTICE_BOARD
+        WHERE
+            STATUS = 'Y'
+    </select>
+
+    <!-- 제목에 검색어가 포함된 게시물을 조회하는 SQL 쿼리 -->
+    <select id="searchBoardListByTitle" resultMap="noticeBoardResultMap">
+        SELECT
+            a.NOTICE_BOARD_NO,
+            a.NOTICE_TITLE,
+            a.MEMBER_ID,
+            a.CREATE_DATE,
+            a.MODIFY_DATE,
+            a.HITS
+        FROM
+            NOTICE_BOARD a
+        WHERE
+            a.NOTICE_TITLE LIKE CONCAT('%', #{keyword}, '%')
+        AND
+            a.STATUS = 'Y'
+    </select>
+
+    <!-- 아이디가 검색어에 포함되있는경우 -->
+    <select id="searchBoardListByMemberId" resultMap="noticeBoardResultMap">
+        SELECT
+            a.NOTICE_BOARD_NO,
+            a.NOTICE_TITLE,
+            a.MEMBER_ID,
+            a.CREATE_DATE,
+            a.MODIFY_DATE,
+            a.HITS
+        FROM
+            NOTICE_BOARD a
+        WHERE
+            a.MEMBER_ID LIKE CONCAT('%', #{keyword}, '%')
+        AND
+            a.STATUS = 'Y'
+    </select>
+
+<!--  공지 등록  -->
+    <update id="goAnnouncement" parameterType="int">
+        UPDATE
+            NOTICE_BOARD
+        SET
+            ANNOUNCEMENT = 'Y'
+        WHERE
+            NOTICE_BOARD_NO = #{noticeBoardNo}
+    </update>
+
+<!--  상세 게시글 조회  -->
+    <select id="getBoardDetail" parameterType="int" resultMap="noticeBoardResultMap">
+        SELECT
+            NOTICE_BOARD_NO,
+            MEMBER_ID,
+            NOTICE_TITLE,
+            NOTICE_CONTENT,
+            HITS,
+            CREATE_DATE,
+            MODIFY_DATE,
+            STATUS
+        FROM
+            NOTICE_BOARD
+        WHERE
+            NOTICE_BOARD_NO = #{noticeBoardNo}
+    </select>
+
+<!-- 조회수 증가 -->
+    <update id="incrementHits" parameterType="int">
+        UPDATE
+            NOTICE_BOARD
+        SET
+            HITS = HITS + 1
+        WHERE
+            NOTICE_BOARD_NO = #{noticeBoardNo}
+    </update>
+
+<!--  게시글 작성  -->
+   <insert id="addBoard" parameterType="noticeBoardVO" useGeneratedKeys="true" keyProperty="noticeBoardNo">
+        INSERT INTO NOTICE_BOARD
+            (MEMBER_ID, NOTICE_TITLE, NOTICE_CONTENT)
+        VALUES
+            (#{memberId}, #{noticeTitle}, #{noticeContent})
+    </insert>
+
+<!--  게시글 수정  -->
+    <update id="updatePost" parameterType="noticeBoardVO" useGeneratedKeys="true" keyProperty="noticeBoardNo">
+        UPDATE
+            NOTICE_BOARD
+        SET
+            NOTICE_TITLE = #{noticeTitle},
+            NOTICE_CONTENT = #{noticeContent},
+            MODIFY_DATE = CURRENT_TIMESTAMP
+        WHERE
+            NOTICE_BOARD_NO = #{noticeBoardNo}
+        AND
+            MEMBER_ID = #{memberId}
+    </update>
+
+<!--  게시글 삭제  -->
+    <update id="deletePost" parameterType="int">
+        UPDATE
+            NOTICE_BOARD
+        SET
+            STATUS = 'N'
+        WHERE
+            NOTICE_BOARD_NO = #{noticeBoardNo}
+    </update>
+</mapper>

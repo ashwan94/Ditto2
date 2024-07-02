@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.nextit.ditto.seat.SeatMapper">
+    <select id="selectSeat" resultType="seatVO">
+        SELECT
+            SEAT_NO,
+            SEAT_ROW,
+            SEAT_COL,
+            STATUS
+        FROM
+            SEAT
+    </select>
+    <update id="goReservate" parameterType="int">
+        UPDATE
+            SEAT
+        SET
+            STATUS = 'N'
+        WHERE
+            SEAT_NO = #{seatNo}
+    </update>
+</mapper>

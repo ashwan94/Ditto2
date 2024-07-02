@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.nextit.ditto.freeboard.FreeBoardMapper">
+    <resultMap id="freeBoardResultMap" type="freeBoardVO">
+        <id property="freeBoardNo" column="FREE_BOARD_NO"/> <!-- 게시판 번호 매핑 -->
+        <result property="memberId" column="MEMBER_ID"/> <!-- 회원 ID 매핑 -->
+        <result property="freeTitle" column="FREE_TITLE"/> <!-- 게시물 제목 매핑 -->
+        <result property="freeContent" column="FREE_CONTENT"/> <!-- 게시물 내용 매핑 -->
+        <result property="hits" column="HITS"/> <!-- 조회수 매핑 -->
+        <result property="createDate" column="CREATE_DATE"/> <!-- 등록 시간 매핑 -->
+        <result property="modifyDate" column="MODIFY_DATE"/> <!-- 수정 시간 매핑 -->
+        <result property="status" column="STATUS"/> <!-- 상태 매핑 -->
+        <result property="commentCount" column="COMMENT_COUNT"/> <!-- 댓글 개수 -->
+    </resultMap>
+
+    <!-- 모든 게시물을 조회하는 SQL 쿼리 -->
+    <select id="getBoardList" resultMap="freeBoardResultMap">
+        SELECT
+            a.FREE_BOARD_NO,
+            a.MEMBER_ID,
+            a.FREE_TITLE,
+            a.FREE_CONTENT,
+            a.HITS,
+            a.CREATE_DATE,
+            a.MODIFY_DATE,
+            a.STATUS,
+            COUNT(c.COMMENT_NO) AS COMMENT_COUNT
+        FROM
+            FREE_BOARD a
+        LEFT OUTER JOIN
+            COMMENT c
+        ON
+            a.FREE_BOARD_NO = c.BOARD_NO
+        AND
+            c.STATUS = 'Y'
+        <where>
+            <if test="memberAdmin == 'MEMBER'">
+                a.STATUS = 'Y'
+            </if>
+            <if test="searchWord != null and searchWord != ''">
+                <trim prefix="AND" prefixOverrides="AND |OR">
+                    <if test="memberAdmin == 'MEMBER'">
+                        AND
+                    </if>
+                    <choose>
+                        <when test="searchType == '아이디'">
+                            a.MEMBER_ID LIKE CONCAT('%', #{searchWord}, '%')
+                        </when>
+                        <when test="searchType == '제목'">
+                            a.FREE_TITLE LIKE CONCAT('%', #{searchWord}, '%')
+                        </when>
+                    </choose>
+                </trim>
+            </if>
+        </where>
+        GROUP BY
+            a.FREE_BOARD_NO,
+            a.MEMBER_ID,
+            a.FREE_TITLE,
+            a.FREE_CONTENT,
+            a.HITS,
+            a.CREATE_DATE,
+            a.MODIFY_DATE,
+            a.STATUS
+        ORDER BY
+            a.CREATE_DATE DESC
+        LIMIT
+            #{firstRecordIndex}, #{pageNumListSize}
+    </select>
+
+    <!--  전체 게시글 개수 조회  -->
+    <select id="getBoardListCount" parameterType="searchVO" resultType="int">
+        SELECT
+            COUNT(FREE_BOARD_NO)
+        FROM
+            FREE_BOARD
+        <where>
+            <if test="memberAdmin == 'MEMBER'">
+                STATUS = 'Y'
+            </if>
+            <if test="searchWord != null and searchWord != ''">
+                <trim prefix="AND" prefixOverrides="AND |OR">
+                    <if test="memberAdmin == 'MEMBER'">
+                        AND
+                    </if>
+                    <choose>
+                        <when test="searchType == '아이디'">
+                            MEMBER_ID LIKE CONCAT('%', #{searchWord}, '%')
+                        </when>
+                        <when test="searchType == '제목'">
+                            FREE_TITLE LIKE CONCAT('%', #{searchWord}, '%')
+                        </when>
+                    </choose>
+                </trim>
+            </if>
+        </where>
+    </select>
+
+<!--  상세 게시글 조회  -->
+    <select id="getBoardDetail" parameterType="int" resultMap="freeBoardResultMap">
+        SELECT
+            FREE_BOARD_NO,
+            MEMBER_ID,
+            FREE_TITLE,
+            FREE_CONTENT,
+            HITS,
+            CREATE_DATE,
+            MODIFY_DATE,
+            STATUS
+        FROM
+            FREE_BOARD
+        WHERE
+            FREE_BOARD_NO = #{freeBoardNo}
+    </select>
+
+<!-- 조회수 증가 -->
+    <update id="incrementHits" parameterType="int">
+        UPDATE
+            FREE_BOARD
+        SET
+            HITS = HITS + 1
+        WHERE
+            FREE_BOARD_NO = #{freeBoardNo}
+    </update>
+
+<!--  게시글 작성  -->
+   <insert id="addBoard" parameterType="freeBoardVO" useGeneratedKeys="true" keyProperty="freeBoardNo">
+        INSERT INTO FREE_BOARD
+            (MEMBER_ID, FREE_TITLE, FREE_CONTENT)
+        VALUES
+            (#{memberId}, #{freeTitle}, #{freeContent})
+    </insert>
+
+<!--  게시글 수정  -->
+    <update id="updatePost" parameterType="freeBoardVO" useGeneratedKeys="true" keyProperty="freeBoardNo">
+        UPDATE
+            FREE_BOARD
+        SET
+            FREE_TITLE = #{freeTitle},
+            FREE_CONTENT = #{freeContent},
+            MODIFY_DATE = CURRENT_TIMESTAMP
+        WHERE
+            FREE_BOARD_NO = #{freeBoardNo}
+        AND
+            MEMBER_ID = #{memberId}
+    </update>
+
+<!--  게시글 삭제  -->
+    <update id="deletePost" parameterType="int">
+        UPDATE
+            FREE_BOARD
+        SET
+            STATUS = 'N'
+        WHERE
+            FREE_BOARD_NO = #{freeBoardNo}
+    </update>
+
+    <!-- 관리자 페이지 Y인 게시글 비활성화 -->
+    <update id="adminfreeBoardStatusY" parameterType="freeBoardVO">
+        UPDATE
+            FREE_BOARD
+        SET
+            STATUS = 'N'
+        WHERE
+            FREE_BOARD_NO = #{freeBoardNo}
+    </update>
+    <!-- 관리자 페이지 N인 게시글 활성화 -->
+    <update id="adminfreeBoardStatusN" parameterType="freeBoardVO">
+        UPDATE
+            FREE_BOARD
+        SET
+            STATUS = 'Y'
+        WHERE
+            FREE_BOARD_NO = #{freeBoardNo}
+    </update>
+</mapper>

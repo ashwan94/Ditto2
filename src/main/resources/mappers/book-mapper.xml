@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.nextit.ditto.book.BookMapper">
+    <select id="getBookListCount" resultType="int" parameterType="searchVO">
+        SELECT
+            COUNT(*) CNT
+        FROM
+            BOOK A
+
+        <where>
+            <!--   아무런 검색 키워드를 입력하지 않은 경우 그냥 전체 목록 띄우기   -->
+            <if test='searchWord == ""'>
+
+            </if>
+            <if test='searchType == "bookName"'>
+                A.BOOK_NAME LIKE CONCAT('%', #{searchWord} ,'%')
+            </if>
+            <if test='searchType == "bookAuthor"'>
+                A.BOOK_AUTHOR LIKE CONCAT('%', #{searchWord} ,'%')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectBooks" parameterType="searchVO" resultType="bookVO">
+        SELECT
+                B.BOOK_NO,
+                B.BOOK_NAME,
+                B.BOOK_COMPANY,
+                B.BOOK_INTRO,
+                B.BOOK_RENT,
+                B.BOOK_AUTHOR,
+                B.BOOK_RELEASE,
+                B.BOOK_IMAGE
+        FROM
+                BOOK B
+        <where>
+            <!-- 아무런 검색을 하지 않을 경우 그냥 전체 목록 띄우기 -->
+            <if test='searchWord != ""'>
+                <choose>
+                    <when test='searchType == "bookName"'>
+                        B.BOOK_NAME LIKE CONCAT('%', #{searchWord}, '%')
+                    </when>
+                    <when test='searchType == "bookAuthor"'>
+                        B.BOOK_AUTHOR LIKE CONCAT('%', #{searchWord}, '%')
+                    </when>
+                </choose>
+            </if>
+        </where>
+        LIMIT #{firstRecordIndex}, 10
+    </select>
+
+
+<!--  getBook 도서 정보 상세보기 쿼리문   -->
+    <select id="getBook" parameterType="int" resultType="bookVO">
+        SELECT
+            *
+        FROM
+            book
+        WHERE
+            BOOK_NO = #{bookNo}
+    </select>
+</mapper>

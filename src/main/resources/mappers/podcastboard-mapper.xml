@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.nextit.ditto.podcastboard.PodcastBoardMapper">
+    <resultMap id="podcastBoardResultMap" type="podcastBoardVO">
+        <id property="podcastBoardNo" column="PODCAST_BOARD_NO"/> <!-- 게시판 번호 매핑 -->
+        <result property="memberId" column="MEMBER_ID"/> <!-- 회원 ID 매핑 -->
+        <result property="podcastTitle" column="PODCAST_TITLE"/> <!-- 게시물 제목 매핑 -->
+        <result property="podcastContent" column="PODCAST_CONTENT"/> <!-- 게시물 내용 매핑 -->
+        <result property="hits" column="HITS"/> <!-- 조회수 매핑 -->
+        <result property="createDate" column="CREATE_DATE"/> <!-- 등록 시간 매핑 -->
+        <result property="modifyDate" column="MODIFY_DATE"/> <!-- 수정 시간 매핑 -->
+        <result property="status" column="STATUS"/> <!-- 상태 매핑 -->
+        <result property="onair" column="ONAIR"/> <!-- 방송 상태 매핑 -->
+        <result property="liveTime" column="LIVE_TIME"/> <!-- 방송 시간 매핑 -->
+        <result property="commentCount" column="COMMENT_COUNT"/> <!-- 댓글 개수 -->
+    </resultMap>
+
+    <!-- 모든 게시물을 조회하는 SQL 쿼리 -->
+    <select id="getBoardList" resultMap="podcastBoardResultMap">
+        SELECT
+            a.PODCAST_BOARD_NO,
+            a.MEMBER_ID,
+            a.PODCAST_TITLE,
+            a.PODCAST_CONTENT,
+            a.HITS,
+            a.CREATE_DATE,
+            a.MODIFY_DATE,
+            a.STATUS,
+            a.ONAIR,
+            COUNT(c.COMMENT_NO) AS COMMENT_COUNT
+        FROM
+            PODCAST_BOARD a
+        LEFT OUTER JOIN
+            COMMENT c
+        ON
+            a.PODCAST_BOARD_NO = c.BOARD_NO
+        AND
+            c.STATUS = 'Y'
+        AND
+            a.ONAIR = 'BEFORE'
+        WHERE
+            a.STATUS = 'Y'
+        GROUP BY
+            a.PODCAST_BOARD_NO,
+            a.MEMBER_ID,
+            a.PODCAST_TITLE,
+            a.PODCAST_CONTENT,
+            a.HITS,
+            a.CREATE_DATE,
+            a.MODIFY_DATE,
+            a.STATUS,
+            a.ONAIR
+        ORDER BY
+            a.CREATE_DATE DESC
+        LIMIT
+            #{firstRecordIndex}, #{pageNumListSize}
+    </select>
+
+<!--  전체 게시글 개수 조회  -->
+    <select id="getBoardListCount" parameterType="searchVO" resultType="int">
+        SELECT
+            COUNT(PODCAST_BOARD_NO)
+        FROM
+            PODCAST_BOARD
+        WHERE
+            STATUS = 'Y'
+    </select>
+
+    <!-- 제목에 검색어가 포함된 게시물을 조회하는 SQL 쿼리 -->
+    <select id="searchBoardListByTitle" resultMap="podcastBoardResultMap">
+        SELECT
+            a.PODCAST_BOARD_NO,
+            a.PODCAST_TITLE,
+            a.MEMBER_ID,
+            a.CREATE_DATE,
+            a.MODIFY_DATE,
+            a.HITS
+        FROM
+            PODCAST_BOARD a
+        WHERE
+            a.PODCAST_TITLE LIKE CONCAT('%', #{keyword}, '%')
+        AND
+            a.STATUS = 'Y'
+    </select>
+
+    <!-- 아이디가 검색어에 포함되있는경우 -->
+    <select id="searchBoardListByMemberId" resultMap="podcastBoardResultMap">
+        SELECT
+            a.PODCAST_BOARD_NO,
+            a.PODCAST_TITLE,
+            a.MEMBER_ID,
+            a.CREATE_DATE,
+            a.MODIFY_DATE,
+            a.HITS
+        FROM
+            PODCAST_BOARD a
+        WHERE
+            a.MEMBER_ID LIKE CONCAT('%', #{keyword}, '%')
+        AND
+            a.STATUS = 'Y'
+    </select>
+
+<!--  상세 게시글 조회  -->
+    <select id="getBoardDetail" parameterType="int" resultMap="podcastBoardResultMap">
+        SELECT
+            PODCAST_BOARD_NO,
+            MEMBER_ID,
+            PODCAST_TITLE,
+            PODCAST_CONTENT,
+            HITS,
+            CREATE_DATE,
+            MODIFY_DATE,
+            STATUS
+        FROM
+            PODCAST_BOARD
+        WHERE
+            PODCAST_BOARD_NO = #{podcastBoardNo}
+    </select>
+
+<!-- 조회수 증가 -->
+    <update id="incrementHits" parameterType="int">
+        UPDATE
+            PODCAST_BOARD
+        SET
+            HITS = HITS + 1
+        WHERE
+            PODCAST_BOARD_NO = #{podcastBoardNo}
+    </update>
+
+<!--  게시글 작성  -->
+   <insert id="addBoard" parameterType="podcastBoardVO" useGeneratedKeys="true" keyProperty="podcastBoardNo">
+        INSERT INTO PODCAST_BOARD
+            (MEMBER_ID, PODCAST_TITLE, PODCAST_CONTENT)
+        VALUES
+            (#{memberId}, #{podcastTitle}, #{podcastContent})
+    </insert>
+
+<!--  게시글 수정  -->
+    <update id="updatePost" parameterType="podcastBoardVO" useGeneratedKeys="true" keyProperty="podcastBoardNo">
+        UPDATE
+            PODCAST_BOARD
+        SET
+            PODCAST_TITLE = #{podcastTitle},
+            PODCAST_CONTENT = #{podcastContent},
+            MODIFY_DATE = CURRENT_TIMESTAMP
+        WHERE
+            PODCAST_BOARD_NO = #{podcastBoardNo}
+        AND
+            MEMBER_ID = #{memberId}
+    </update>
+
+<!--  게시글 삭제  -->
+    <update id="deletePost" parameterType="int">
+        UPDATE
+            PODCAST_BOARD
+        SET
+            STATUS = 'N'
+        WHERE
+            PODCAST_BOARD_NO = #{podcastBoardNo}
+    </update>
+
+    <!-- 관리자 페이지 팟캐스트 리스트 조회 -->
+    <select id="adminPodcastList" resultType="podcastBoardVO">
+        SELECT
+            a.PODCAST_BOARD_NO,
+            a.PODCAST_TITLE,
+            a.MEMBER_ID,
+            a.MODIFY_DATE,
+            a.LIVE_TIME,
+            a.ONAIR,
+            a.HITS,
+            a.STATUS
+        FROM
+            PODCAST_BOARD a
+    </select>
+    <!-- 관리자 페이지 팟캐스트 게시글 상태변경 -->
+    <update id="adminPodcastStatusUpdate" parameterType="podcastBoardVO">
+        UPDATE
+            PODCAST_BOARD
+        SET
+            STATUS = #{status}
+        WHERE
+            PODCAST_BOARD_NO = #{podcastBoardNo}
+    </update>
+    <!-- 관리자 페이지 팟캐스트 리스트 총시간 많은순 정렬 -->
+    <select id="adminPodcastListOrderBy" resultType="podcastBoardVO">
+        SELECT
+            a.PODCAST_BOARD_NO,
+            a.PODCAST_TITLE,
+            a.MEMBER_ID,
+            a.MODIFY_DATE,
+            a.LIVE_TIME,
+            a.ONAIR,
+            a.HITS,
+            a.STATUS
+        FROM
+            PODCAST_BOARD a
+        ORDER BY
+            <choose>
+                <when test="podcastOrder == 'ASC' ">
+                    a.LIVE_TIME ASC
+                </when>
+                <otherwise>
+                    a.LIVE_TIME DESC
+                </otherwise>
+            </choose>
+    </select>
+</mapper>

@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.nextit.ditto.member.MemberMapper">
+    <!--  로그인용   -->
+    <select id="findMember" parameterType="memberVO" resultType="memberVO">
+        SELECT
+                *
+        FROM
+            MEMBER A
+        WHERE
+            A.MEMBER_ID = #{memberId}
+            AND A.MEMBER_PW = #{memberPw}
+            AND A.MEMBER_DELETE = 'N'
+    </select>
+
+    <!-- 회원가입용   -->
+    <insert id="signup" parameterType="memberVO">
+        INSERT INTO
+        MEMBER
+        (
+            MEMBER_ID,
+            MEMBER_NAME,
+            MEMBER_NICKNAME,
+            MEMBER_PW,
+            MEMBER_TEL,
+            MEMBER_POSTCODE,
+            MEMBER_ADD,
+            MEMBER_PROFILE,
+            MEMBER_DETAILADD,
+            MEMBER_BIRTH
+        ) VALUES (
+            #{memberId},
+            #{memberName},
+            #{memberNickname},
+            #{memberPw},
+            #{memberTel},
+            #{memberPostcode},
+            #{memberAdd},
+            #{memberProfile},
+            #{memberDetailAdd},
+            #{memberBirth}
+        )
+    </insert>
+
+    
+    <!--  회원가입 아이디 중복 체크용   -->
+    <select id="checkIdIsDuplicated" parameterType="String" resultType="int">
+        SELECT
+            COUNT(*)
+        FROM
+            MEMBER A
+        WHERE
+            A.MEMBER_ID = #{memberId}
+    </select>
+
+    <!-- 회원가입 닉네임 중복 체크용 -->
+    <select id="checkNicknameIsDuplicated" parameterType="String" resultType="int">
+        SELECT
+              COUNT(*)
+        FROM
+               MEMBER A
+        WHERE
+              A.MEMBER_NICKNAME = #{memberNickname}
+
+    </select>
+
+    <!--  마이페이지 확인용   -->
+    <select id="searchMemberInfo" parameterType="String" resultType="memberVO">
+        SELECT
+            *
+        FROM
+            MEMBER A
+        WHERE
+            A.MEMBER_ID = #{memberId}
+    </select>
+
+<!--  마이페이지 프로필 이미지 조회  -->
+    <select id="getProfile" parameterType="string" resultType="string">
+        SELECT
+            MEMBER_PROFILE
+        FROM
+            MEMBER
+        WHERE
+            MEMBER_ID = #{memberId}
+    </select>
+
+<!--  마이페이지 프로필 이미지 등록  -->
+    <update id="registerProfile" parameterType="string">
+        UPDATE
+            MEMBER
+        SET
+            MEMBER_PROFILE = #{imageUrl}
+        WHERE
+            MEMBER_ID = #{memberId}
+    </update>
+
+    <!-- 마이페이지 비밀번호 수정   -->
+    <update id="passwordChange" parameterType="memberVO">
+        UPDATE
+            MEMBER A
+        SET
+            A.MEMBER_PW = #{memberPw}
+        WHERE
+            A.MEMBER_ID = #{memberId}
+    </update>
+
+    <!-- 회원정보 수정 -->
+    <update id="updateMemberData" parameterType="memberVO">
+        UPDATE
+            MEMBER A
+        SET
+            A.MEMBER_NICKNAME = #{memberNickname},
+            A.MEMBER_POSTCODE = #{memberPostcode},
+            A.MEMBER_ADD = #{memberAdd},
+            A.MEMBER_DETAILADD = #{memberDetailAdd},
+            A.MEMBER_BIRTH = #{memberBirth}
+        WHERE
+            A.MEMBER_ID = #{memberId}
+    </update>
+
+
+    <!-- 회원 멤버십 구독 가입 -->
+    <update id="updateMemberSubscribe" parameterType="String">
+        UPDATE
+            MEMBER A
+        SET
+            A.MEMBER_SUB = "Y"
+        WHERE
+            A.MEMBER_ID =  #{memberId}
+    </update>
+
+    <!-- 관리자 페이지 전체 회원정보 조회 -->
+    <select id="getMemberList" resultType="memberVO">
+        SELECT
+            A.MEMBER_NO,
+            A.MEMBER_ID,
+            A.MEMBER_NAME,
+            A.MEMBER_NICKNAME,
+            A.MEMBER_SUB,
+            A.MEMBER_TEL,
+            A.MEMBER_DELETE
+        FROM
+            MEMBER A
+    </select>
+    <!-- 관리자 페이지 회원정보 비활성화 -->
+    <update id="adminPageMemberDeleteY" parameterType="memberVO">
+        UPDATE
+            MEMBER A
+        SET
+            A.MEMBER_DELETE = 'Y'
+        WHERE
+            A.MEMBER_ID = #{memberId}
+    </update>
+    <!-- 관리자 페이지 회원정보 활성화 -->
+    <update id="adminPageMemberDeleteN" parameterType="memberVO">
+        UPDATE
+        MEMBER A
+        SET
+        A.MEMBER_DELETE = 'N'
+        WHERE
+        A.MEMBER_ID = #{memberId}
+    </update>
+    <!-- 관리자 페이지 회원 구독 상태 변경 -->
+    <update id="adminMemberSubStatus" parameterType="memberVO">
+        UPDATE
+        MEMBER A
+        SET
+        A.MEMBER_SUB = #{memberSub}
+        WHERE
+        A.MEMBER_ID = #{memberId}
+    </update>
+    <!-- 관리자 페이지 도서대여이력 아이디 클릭식 회원정보 조회 -->
+    <select id="adminPageMemberClickListSearch" parameterType="memberVO" resultType="memberVO">
+        SELECT
+        A.MEMBER_NO,
+        A.MEMBER_ID,
+        A.MEMBER_NAME,
+        A.MEMBER_NICKNAME,
+        A.MEMBER_SUB,
+        A.MEMBER_TEL,
+        A.MEMBER_DELETE
+        FROM
+        MEMBER A
+        WHERE
+        A.MEMBER_ID = #{memberId}
+    </select>
+    <!-- 관리자 페이지 검색어로 조회 -->
+    <select id="adminPageSearchMemberIdData" parameterType="string" resultType="memberVO">
+        SELECT
+            A.MEMBER_NO,
+            A.MEMBER_ID,
+            A.MEMBER_NAME,
+            A.MEMBER_NICKNAME,
+            A.MEMBER_SUB,
+            A.MEMBER_TEL,
+            A.MEMBER_DELETE
+        FROM
+            MEMBER A
+        WHERE
+            A.MEMBER_ID LIKE CONCAT('%', #{searchWord}, '%')
+    </select>
+    <!-- 관리자 페이지 멤버십 OX 정렬 조회 -->
+    <select id="adminPageMemberSubChangeOX" parameterType="memberVO" resultType="memberVO">
+        SELECT
+        A.MEMBER_NO,
+        A.MEMBER_ID,
+        A.MEMBER_NAME,
+        A.MEMBER_NICKNAME,
+        A.MEMBER_SUB,
+        A.MEMBER_TEL,
+        A.MEMBER_DELETE
+        FROM
+        MEMBER A
+        WHERE
+        A.MEMBER_SUB = #{memberSub}
+    </select>
+    <!-- 관리자 페이지 회원상태 활성화, 정지 정렬 조회 -->
+    <select id="adminPageMemberDeleteChangeOX" parameterType="memberVO" resultType="memberVO">
+        SELECT
+        A.MEMBER_NO,
+        A.MEMBER_ID,
+        A.MEMBER_NAME,
+        A.MEMBER_NICKNAME,
+        A.MEMBER_SUB,
+        A.MEMBER_TEL,
+        A.MEMBER_DELETE
+        FROM
+        MEMBER A
+        WHERE
+        A.MEMBER_DELETE = #{memberDelete}
+    </select>
+
+    <!-- 회원 탈퇴  -->
+    <update id="deleteMember" parameterType="String">
+        UPDATE
+             MEMBER A
+        SET
+             A.MEMBER_DELETE = "Y"
+        WHERE
+              A.MEMBER_ID =  #{memberId}
+    </update>
+</mapper>
+

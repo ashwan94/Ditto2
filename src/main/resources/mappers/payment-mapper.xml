@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.nextit.ditto.payment.PaymentMapper">
+    <resultMap id="paymentResultMap" type="paymentVO">
+        <id property="paymentNo" column="PAYMENT_NO"/>
+        <result property="memberId" column="MEMBER_ID"/>
+        <result property="price" column="PRICE"/>
+        <result property="createDate" column="CREATE_DATE"/>
+    </resultMap>
+<!--  결제 내역 조회  -->
+    <select id="getPaymentList" resultMap="paymentResultMap">
+        SELECT
+            PAYMENT_NO, MEMBER_ID, PRICE, CREATE_DATE
+        FROM
+            PAYMENT
+    </select>
+<!--  결제 정보 입력  -->
+    <insert id="goPay" parameterType="paymentVO" useGeneratedKeys="true" keyProperty="paymentNo">
+        INSERT INTO PAYMENT
+            (MEMBER_ID, PRICE)
+        VALUES
+            (#{memberId}, #{price})
+    </insert>
+</mapper>

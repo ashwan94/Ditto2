@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.nextit.ditto.rent.RentMapper">
+
+
+    <!--  도서 대여   -->
+    <insert id="bookRent" parameterType="rentVO">
+        INSERT INTO
+        rent
+        (
+            book_no,
+            book_name,
+            member_no,
+            member_id,
+            rent_start,
+            rent_end
+        )
+        VALUES
+        (
+            #{bookNo},
+            #{bookName},
+            #{memberNo},
+            #{memberId},
+            now(),
+            DATE_ADD(NOW(), INTERVAL 14 DAY)
+        )
+    </insert>
+
+    <!--  사용자 도서 대여 후 대여 상태 변경   -->
+     <update id="updateBookStatus" parameterType="int">
+        UPDATE
+            book
+        SET
+            BOOK_RENT = 'Y'
+        WHERE
+            book_no = #{bookNo} AND BOOK_RENT = 'N';
+    </update>
+
+
+
+
+
+    <!-- 사용자 연체 날수 확인 쿼리 -->
+    <select id="checkOverdueDays" parameterType="int" resultType="int">
+        SELECT
+            IFNULL (
+        (
+            SELECT
+            CASE
+            WHEN
+                NOW() > rent_end
+            THEN
+                DATEDIFF(NOW(), rent_end)
+            ELSE
+                0
+            END
+                AS overdue_days
+            FROM
+                rent
+            WHERE
+                member_no = #{memberNo}
+            AND
+                rent_return IS NULL
+            LIMIT 1
+        ),
+        0)
+        AS overdue_days;
+    </select>
+
+
+    <!-- 사용자 대여도서 권수 체크 쿼리   -->
+    <select id="checkRentCount" parameterType="int" resultType="int">
+        SELECT
+            COUNT(*) AS rent_count
+        FROM
+            rent
+        WHERE
+            member_no = #{memberNo}
+        AND
+            rent_end >= NOW()
+        AND
+            rent_return IS NULL
+    </select>
+    
+    <!-- 로그인한 회원 도서 대여 목록 -->
+    <select id="showBookList" parameterType="string" resultType="rentVO">
+        SELECT
+            R.RENT_NO,
+            R.BOOK_NO,
+            R.BOOK_NAME,
+            R.RENT_START,
+            R.RENT_END,
+            R.RENT_RETURN,
+            R.RENT_DELAY,
+            B.BOOK_RENT
+        FROM
+            RENT R
+        JOIN
+            BOOK B
+        ON
+            R.BOOK_NO = B.BOOK_NO
+        WHERE
+            R.MEMBER_ID = #{memberId}
+        ORDER BY
+            STR_TO_DATE(R.RENT_START, '%Y-%m-%d') DESC;
+    </select>
+    <!-- 도서 반납 -->
+    <update id="rentReturn" parameterType="rentVO">
+        UPDATE
+            RENT R
+        SET
+            R.RENT_RETURN = NOW()
+        WHERE
+            R.BOOK_NO = #{bookNo} AND
+            R.RENT_NO = #{rentNo}
+    </update>
+    <!-- 도서 반납 -->
+    <update id="rentBookReturn" parameterType="rentVO">
+        UPDATE
+            BOOK B
+        SET
+            B.book_rent = 'N'
+        WHERE
+            B.BOOK_NO = #{bookNo}
+    </update>
+
+    <!-- 관리자 페이지 도서 대여 이력 가져오기 -->
+    <select id="adminPageBookRentList" resultType="rentVO">
+        SELECT
+            R.RENT_NO,
+            R.BOOK_NO,
+            R.BOOK_NAME,
+            R.RENT_START,
+            R.RENT_END,
+            R.RENT_RETURN,
+            R.RENT_DELAY,
+            B.BOOK_RENT,
+            R.MEMBER_ID
+        FROM
+            RENT R
+        JOIN
+            BOOK B
+        ON
+            R.BOOK_NO = B.BOOK_NO
+    </select>
+    <!-- 관리자 페이지 도서 대여이력 Id 검색 -->
+    <select id="adminBookSearchPageId" parameterType="string" resultType="rentVO">
+        SELECT
+            R.RENT_NO,
+            R.BOOK_NO,
+            R.BOOK_NAME,
+            R.RENT_START,
+            R.RENT_END,
+            R.RENT_RETURN,
+            R.RENT_DELAY,
+            B.BOOK_RENT,
+            R.MEMBER_ID
+        FROM
+            RENT R
+        JOIN
+            BOOK B
+        ON
+            R.BOOK_NO = B.BOOK_NO
+        WHERE
+            R.MEMBER_ID LIKE CONCAT('%', #{searchWord}, '%')
+    </select>
+    <!-- 관리자 페이지 도서 대여이력 도서명 검색 -->
+    <select id="adminBookSearchPageBook" parameterType="string" resultType="rentVO">
+        SELECT
+            R.RENT_NO,
+            R.BOOK_NO,
+            R.BOOK_NAME,
+            R.RENT_START,
+            R.RENT_END,
+            R.RENT_RETURN,
+            R.RENT_DELAY,
+            B.BOOK_RENT,
+            R.MEMBER_ID
+        FROM
+            RENT R
+        JOIN
+            BOOK B
+        ON
+            R.BOOK_NO = B.BOOK_NO
+        WHERE
+            R.BOOK_NAME LIKE CONCAT('%', #{searchWord}, '%')
+    </select>
+    <!-- 관리자 페이지 도서 대여이력 대여일 검색 -->
+    <select id="adminBookSearchPageRentStart" parameterType="string" resultType="rentVO">
+        SELECT
+            R.RENT_NO,
+            R.BOOK_NO,
+            R.BOOK_NAME,
+            R.RENT_START,
+            R.RENT_END,
+            R.RENT_RETURN,
+            R.RENT_DELAY,
+            B.BOOK_RENT,
+            R.MEMBER_ID
+        FROM
+            RENT R
+        JOIN
+            BOOK B
+        ON
+            R.BOOK_NO = B.BOOK_NO
+        WHERE
+            R.RENT_START LIKE CONCAT('%', #{searchWord}, '%')
+    </select>
+    <!-- 관리자 페이지 도서 대여이력 반납예정일 검색 -->
+    <select id="adminBookSearchPageRentEnd" parameterType="string" resultType="rentVO">
+        SELECT
+            R.RENT_NO,
+            R.BOOK_NO,
+            R.BOOK_NAME,
+            R.RENT_START,
+            R.RENT_END,
+            R.RENT_RETURN,
+            R.RENT_DELAY,
+            B.BOOK_RENT,
+            R.MEMBER_ID
+        FROM
+            RENT R
+        JOIN
+            BOOK B
+        ON
+            R.BOOK_NO = B.BOOK_NO
+        WHERE
+            R.RENT_END LIKE CONCAT('%', #{searchWord}, '%')
+    </select>
+    <!-- 관리자 페이지 도서 대여이력 실제반납일 검색 -->
+    <select id="adminBookSearchPageRentReturn" parameterType="string" resultType="rentVO">
+        SELECT
+            R.RENT_NO,
+            R.BOOK_NO,
+            R.BOOK_NAME,
+            R.RENT_START,
+            R.RENT_END,
+            R.RENT_RETURN,
+            R.RENT_DELAY,
+            B.BOOK_RENT,
+            R.MEMBER_ID
+        FROM
+            RENT R
+        JOIN
+            BOOK B
+        ON
+            R.BOOK_NO = B.BOOK_NO
+        WHERE
+            R.RENT_RETURN LIKE CONCAT('%', #{searchWord}, '%')
+    </select>
+    <!-- 관리자 페이지 도서 연체여부 'Y' 'N' 인것들만 -->
+    <select id="rentDelaySearch" resultType="rentVO">
+        SELECT
+            R.RENT_NO,
+            R.BOOK_NO,
+            R.BOOK_NAME,
+            R.RENT_START,
+            R.RENT_END,
+            R.RENT_RETURN,
+            R.RENT_DELAY,
+            B.BOOK_RENT,
+            R.MEMBER_ID
+        FROM
+            RENT R
+        JOIN
+            BOOK B
+        ON
+            R.BOOK_NO = B.BOOK_NO
+        WHERE
+            R.RENT_DELAY = 'Y'
+    </select>
+</mapper>

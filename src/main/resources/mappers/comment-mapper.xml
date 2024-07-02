@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.nextit.ditto.comment.CommentMapper">
+    <resultMap id="commentResultMap" type="commentVO">
+        <id property="commentNo" column="COMMENT_NO"/> <!-- 댓글 번호 매핑 -->
+        <result property="boardNo" column="BOARD_NO"/> <!-- 게새글 번호 매핑 -->
+        <result property="memberId" column="MEMBER_ID"/> <!-- 회원 ID 매핑 -->
+        <result property="content" column="CONTENT"/> <!-- 댓글 내용 매핑 -->
+        <result property="type" column="TYPE"/> <!-- 게시판 종류 매핑 -->
+        <result property="gptUsed" column="GPT_USED"/> <!-- 게시판 종류 매핑 -->
+        <result property="createDate" column="CREATE_DATE"/> <!-- 작성일 매핑 -->
+        <result property="modifyDate" column="MODIFY_DATE"/> <!-- 수정일 매핑 -->
+        <result property="status" column="STATUS"/> <!-- 활성화 상태 매핑 -->
+        <result property="memberProfile" column="MEMBER_PROFILE"/> <!-- 회원 프로필 -->
+    </resultMap>
+
+    <!-- 모든 댓글 조회하는 SQL 쿼리 -->
+    <select id="getCommentList" parameterType="commentVO" resultMap="commentResultMap">
+        SELECT
+            c.COMMENT_NO,
+            c.BOARD_NO,
+            c.MEMBER_ID,
+            c.CONTENT,
+            c.TYPE,
+            c.CREATE_DATE,
+            c.MODIFY_DATE,
+            c.STATUS,
+            m.MEMBER_PROFILE,
+            c.GPT_USED
+        FROM
+            COMMENT c
+        LEFT OUTER JOIN
+            <choose>
+                <when test="type == 'FREE_BOARD'">
+                    FREE_BOARD b
+                </when>
+                <when test="type == 'NOTICE_BOARD'">
+                    NOTICE_BOARD b
+                </when>
+                <when test="type == 'RELAY_BOARD'">
+                    RELAY_BOARD b
+                </when>
+                <otherwise>
+                    PODCAST_BOARD b
+                </otherwise>
+            </choose>
+        ON
+            <choose>
+                <when test="type == 'FREE_BOARD'">
+                    c.BOARD_NO = b.FREE_BOARD_NO
+                </when>
+                <when test="type == 'NOTICE_BOARD'">
+                    c.BOARD_NO = b.NOTICE_BOARD_NO
+                </when>
+                <when test="type == 'RELAY_BOARD'">
+                    c.BOARD_NO = b.RELAY_BOARD_NO
+                </when>
+                <otherwise>
+                    c.BOARD_NO = b.PODCAST_BOARD_NO
+                </otherwise>
+            </choose>
+        INNER JOIN
+            MEMBER m
+        ON
+            m.MEMBER_ID = c.MEMBER_ID
+        WHERE
+            c.BOARD_NO = #{boardNo}
+        AND
+            c.TYPE = #{type}
+        AND
+            c.STATUS = 'Y'
+    </select>
+
+<!--  댓글 작성  -->
+    <insert id="commentRegister" parameterType="commentVO">
+        INSERT INTO COMMENT
+            (BOARD_NO, MEMBER_ID, CONTENT, TYPE)
+        VALUES
+            (#{boardNo}, #{memberId}, #{content}, #{type})
+    </insert>
+
+<!-- 댓글 수정   -->
+    <update id="commentUpdate" parameterType="commentVO">
+        UPDATE
+            COMMENT
+        SET
+            CONTENT = #{content},
+            MODIFY_DATE = NOW()
+        WHERE
+            COMMENT_NO = #{commentNo}
+    </update>
+
+<!--  댓글 삭제  -->
+    <update id="commentDelete" parameterType="int">
+        UPDATE
+            COMMENT
+        SET
+            STATUS = 'N'
+        WHERE
+            COMMENT_NO = #{commentNo}
+    </update>
+</mapper>

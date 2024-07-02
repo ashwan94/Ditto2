@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+@font-face {
+  font-family: "BMEuljiro10yearslater";
+  font-weight: normal;
+  src: url("./fonts/BMEuljiro10yearslater.ttf") format("truetype");
+}
+
+.Eulji{
+  font-family: "BMEuljiro10yearslater";
+}
+
+@font-face {
+  font-family: "doyeon";
+  font-weight: 300;
+  src: url("./fonts/BMDOHYEON_ttf.ttf") format("truetype");
+}
+
+.dohyeon{
+  font-family: "doyeon";
+}
+
+
+@font-face {
+  font-family: "rundry";
+  font-weight: 300;
+  src: url("./fonts/런드리고딕 Regular.ttf") format("truetype");
+}
+
+.rundry{
+  font-family: "rundry";
+}
+@font-face {
+  font-family: "pado";
+  font-weight: 300;
+  src: url("./fonts/WavvePADO-Regular.ttf") format("truetype");
+}
+
+.pado{
+  font-family: "pado";
+}

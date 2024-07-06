@@ -340,7 +340,8 @@ export default function SignUp() {
                     memberPostcode: memberPostcode,
                     memberAdd: memberAdd,
                     memberDetailAdd: memberDetailAdd,
-                    memberBirth: memberBirth
+                    memberBirth: memberBirth,
+                    memberProfile:"/images/profile/basic_profile.png",
                 }
             }, {
                 headers: {
@@ -521,13 +522,7 @@ export default function SignUp() {
                                 className="hh rg zk _g ch hm dm fm pl/50 xi mi sm xm pm dn/40 w-72"
                                 onChange={memberTelOnChangeHandler}
                             />
-                            {/* TODO
-                            테스트를 위해 임시로 인증 상태를 조작함
-                            인증문자 발송 시 발생하는 비용 낭비 방지 목적
-                            완료되면 onClick={sendMessage} 로 변경하면 됨
-                            06.26 | 안승환 | 마이페이지 프로필 이미지 삽입 작업 중
-                            */}
-                            <button onClick={()=>setCheckCode(false)}
+                            <button onClick={()=>setCheckCode(sendMessage)}
                                     className="bg-blue-500 rounded-xl ms-2 text-white h-12 w-28 font-bold"
                             >인증 요청
                             </button>

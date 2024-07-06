@@ -25,7 +25,7 @@ export default function BookView() {
 
     /* ?bookNo=n 의 n의 값을 bookNo로 저장해두기 */
     const bookNo = searchParams.get("bookNo");
-
+    const [memberSub,setMemberSub] = useState("N");
     /* 첫 랜더링 시 가져올 도서 정보 */
     const getBook = async () => {
         try {
@@ -46,6 +46,18 @@ export default function BookView() {
             console.error("Error fetching data:", error);
         }
     };
+
+
+    useEffect(() => {
+        const memberLog = sessionStorage.getItem("member")
+        if(memberLog){
+            setMemberSub(JSON.parse(memberLog)); // 필요한 경우 memberId, memberNickname, memberAdmin 등에서 data 꺼내쓰기
+        }
+    }, []);
+
+    useEffect(() => {
+        console.log(memberSub.memberSub)
+    }, [memberSub]);
 
     /**
      * 작성자 : 박연지
@@ -210,7 +222,7 @@ export default function BookView() {
                                 책을 깨끗하게 사용해주세요<br/> 우리 모두가 함께 사용하는 소중한 책들입니다. <br/>다음 이용자를 위해 책을 소중히 다뤄주세요.<br/> 감사합니다!
                             </div>
                             <div style={{marginTop: "4%", marginBottom: "2%"}}>
-                                {memberObj ? <button
+                                {memberObj && memberSub.memberSub == "Y" ? <button
                                     className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded my-2"
                                     onClick={bookRentEvent}>
                                     도서 대여

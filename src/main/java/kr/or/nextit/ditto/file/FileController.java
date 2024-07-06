@@ -21,7 +21,7 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/upload")
-@CrossOrigin(origins = ("http://localhost:3000"))
+@CrossOrigin(origins = "http://localhost:3000")
 public class FileController {
     private final FileService service;
     private static final String UPLOAD_DIR = "src/main/frontend/public/"; // 파일 저장 경로

@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.33283b62.css",
-    "main.js": "/static/js/main.f4ce578a.js",
+    "main.js": "/static/js/main.7d6a5c1a.js",
     "static/media/BMEuljiro10yearslater.ttf": "/static/media/BMEuljiro10yearslater.c3312e3562ba1f1088db.ttf",
     "static/media/런드리고딕 Regular.ttf": "/static/media/런드리고딕 Regular.1321609c824ac4aec2b4.ttf",
     "static/media/BMDOHYEON_ttf.ttf": "/static/media/BMDOHYEON_ttf.d20f6c68004f7588ee16.ttf",
@@ -12,10 +12,10 @@
     "index.html": "/index.html",
     "static/media/WavvePADO-Regular.ttf": "/static/media/WavvePADO-Regular.31d6cfe0d16ae931b73c.ttf",
     "main.33283b62.css.map": "/static/css/main.33283b62.css.map",
-    "main.f4ce578a.js.map": "/static/js/main.f4ce578a.js.map"
+    "main.7d6a5c1a.js.map": "/static/js/main.7d6a5c1a.js.map"
   },
   "entrypoints": [
     "static/css/main.33283b62.css",
-    "static/js/main.f4ce578a.js"
+    "static/js/main.7d6a5c1a.js"
   ]
 }

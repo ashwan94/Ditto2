@@ -7,7 +7,6 @@ import KakaoMap from './pages/introduce/kakaoMap';
 
 export default function Main() {
 
-
     // 첫 랜더링 시 사이트 가장 상단으로 위치
     useEffect(() => {
         window.scrollTo({

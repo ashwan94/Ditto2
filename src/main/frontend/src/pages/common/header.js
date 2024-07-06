@@ -130,7 +130,7 @@ const Header = () => {
                   <li><Link to="/community/noticeBoard/list" className="xl">공지사항</Link></li>
                   <li><Link to="/community/freeBoard/list" className="xl">자유게시판</Link></li>
                   <li><Link to="/community/relayBoard/list" className="xl">릴레이 소설</Link></li>
-                  <li><Link to="/community/podcastBoard/list" className="xl">팟캐스트</Link></li>
+                  <li><Link to="/community/podcastBoard/list" className="xl">하브루타</Link></li>
                 </ul>
               </li>
               <li className="c i" x-data="{ dropdown: false }">

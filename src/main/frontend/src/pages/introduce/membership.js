@@ -4,9 +4,7 @@ import axios from "axios";
 
 export default function Membership() {
 
-
-    const [memberId, setMemberId] = useState();
-
+    const [memberId, setMemberId] = useState("");
 
     // 첫 랜더링 시 사이트 가장 상단으로 위치
     useEffect(() => {
@@ -26,7 +24,6 @@ export default function Membership() {
             top: 0,
             behavior: 'auto',
         })
-
     }, []);
 
 
@@ -72,7 +69,7 @@ export default function Membership() {
                 pg: `${pg_method}`, // 결제 방식 지정 -> 카카오페이
                 pay_method: 'card',
                 merchant_uid: `mid_${paymentTime}`, // 현재 시간
-                name: '한석줍쇼 1일 멤버십 이용권 구매', // 결제 품목 및 제목 지정
+                name: '한석줍쇼 30일 멤버십 이용권 구매', // 결제 품목 및 제목 지정
                 amount: parseInt(`${amount}`), // 충전할 금액
                 buyer_email: '구매자 이메일',
                 buyer_name: `${nickname}`,
@@ -98,9 +95,6 @@ export default function Membership() {
                             memberId : memberId,
                         }
                         goPay(paymentHistory)
-                        // console.log("결제 금액: " + amount);
-                        // console.log("결제 완료 시간: " + formatPaymentTime(paymentTime));
-                        // console.log("회원 아이디 : " + memberId);
 
                     } else {
                         alert("결제 실패");
@@ -116,10 +110,12 @@ export default function Membership() {
 
     // 멤버십 결제 내역 입력
     const goPay = async (data)=> {
-        console.log("결제 정보 : ", data);
+
         const res = await axios.post("/payment/goPay", data)
         if(res.status === 200){
-            window.location.href = '/mypage'; // 결제 완료 시 마이페이지로 이동
+            alert("결제가 완료되었습니다. 다시 로그인해주세요.")
+            sessionStorage.removeItem("member");
+            window.location.href = '/SignIn'; // 결제 완료 시 마이페이지로 이동
         }
     }
 

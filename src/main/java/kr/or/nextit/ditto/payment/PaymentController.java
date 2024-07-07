@@ -9,7 +9,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @Slf4j
-@CrossOrigin(origins = "http://nextit.or.kr:23124")
+@CrossOrigin(origins = "http://locathost:3000")
 @RequestMapping("/payment")
 public class PaymentController {
     private final PaymentService service;

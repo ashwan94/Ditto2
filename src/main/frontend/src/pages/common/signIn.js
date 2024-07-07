@@ -3,7 +3,6 @@ import axios, {post} from "axios";
 import {useEffect, useState} from "react";
 
 export default function SignIn() {
-    console.log("로그인 페이지 접근");
     const [memberId, setMemberId] = useState("") // 회원 아이디
     const [memberPw, setMemberPw] = useState("") // 회원 비밀번호
     const [loginStatus, setLoginStatus] = useState(false); // 로그인 상태

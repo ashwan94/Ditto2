@@ -35,7 +35,7 @@ import static kr.or.nextit.ditto.file.FileController.getUuid;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@CrossOrigin(origins = "http://nextit.or.kr:23124")
+@CrossOrigin(origins = "http://localhost:3000")
 public class MemberController {
 
     private final MemberService service;
@@ -126,7 +126,6 @@ public class MemberController {
     // 회원가입
     @PostMapping("/register")
     public void SignUp(MemberVO memberVO) {
-        log.info("회원가입 결과 : {}",memberVO);
         service.signUp(memberVO);
     }
 

@@ -14,7 +14,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@CrossOrigin(origins = "http://nextit.or.kr:23124")
+@CrossOrigin(origins = "http://localhost:3000")
 public class BookController {
     private final BookService service;
 

@@ -9,7 +9,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://nextit.or.kr:23124")
+@CrossOrigin(origins = "http://localhost:3000")
 @Slf4j
 @RequestMapping("/comment")
 public class CommentController {

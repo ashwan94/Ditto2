@@ -11,7 +11,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@CrossOrigin(origins = "http://nextit.or.kr:23124")
+@CrossOrigin(origins = "http://localhost:3000")
 @RequiredArgsConstructor
 @RequestMapping("/noticeBoard")
 public class NoticeBoardController {

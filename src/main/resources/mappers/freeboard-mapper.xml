@@ -36,6 +36,8 @@
             a.FREE_BOARD_NO = c.BOARD_NO
         AND
             c.STATUS = 'Y'
+        AND
+            c.TYPE = "FREE_BOARD"
         <where>
             <if test="memberAdmin == 'MEMBER'">
                 a.STATUS = 'Y'

@@ -6,7 +6,7 @@ import {Link} from "react-router-dom";
 export default function List () {
     // State 에 대한 Hook
     const [boardList, setBoardList] = useState([]);                       // 전체 게시글 리스트
-    const [searchWord, setSearchWord] = useState(null);                           // 검색어
+    const [searchWord, setSearchWord] = useState("");                           // 검색어
     const [searchType, setSearchType] = useState("podcastTitle");           // 검색 타입
     const [memberId, setMemberId] = useState(null);                               // 로그인한 회원 정보
 

@@ -10,7 +10,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/seat")
-@CrossOrigin(origins = "http://nextit.or.kr:23124")
+@CrossOrigin(origins = "http://localhost:3000")
 public class SeatController {
 
     private final SeatService service;

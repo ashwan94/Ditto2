@@ -106,6 +106,20 @@
             A.MEMBER_ID = #{memberId}
     </update>
 
+<!--  회원탈퇴 전 대출 도서 내역 조회  -->
+    <select id="searchBookRent" parameterType="string" resultType="int">
+        SELECT
+            COUNT(r.BOOK_NAME) AS BOOK_RENT_COUNT
+        FROM
+            MEMBER m
+        LEFT OUTER JOIN
+            RENT r
+        ON
+            m.MEMBER_ID = r.MEMBER_ID
+        WHERE
+            m.MEMBER_ID = #{memberId}
+    </select>
+
     <!-- 회원정보 수정 -->
     <update id="updateMemberData" parameterType="memberVO">
         UPDATE

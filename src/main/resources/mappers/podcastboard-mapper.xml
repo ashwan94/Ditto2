@@ -125,12 +125,13 @@
             (#{memberId}, #{podcastTitle})
     </insert>
 
-<!--  게시글 수정  -->
+<!--  방송 시작 / 방송 종료  -->
     <update id="updatePost" parameterType="podcastBoardVO">
         UPDATE
             PODCAST_BOARD
         SET
-            ONAIR = #{onair}
+            ONAIR = #{onair},
+            MODIFY_DATE = CURRENT_TIMESTAMP
         <if test="status != null">
                 , STATUS = #{status}
         </if>
@@ -154,6 +155,7 @@
             a.PODCAST_BOARD_NO,
             a.PODCAST_TITLE,
             a.MEMBER_ID,
+            a.CREATE_DATE,
             a.MODIFY_DATE,
             a.LIVE_TIME,
             a.ONAIR,

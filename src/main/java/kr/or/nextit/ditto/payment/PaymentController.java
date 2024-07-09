@@ -23,7 +23,6 @@ public class PaymentController {
     // 결제 내용 입력
     @PostMapping("/goPay")
     public void goPay(@RequestBody PaymentVO vo){
-        log.info("결제 정보 : {}", vo);
         service.goPay(vo);
     }
 }

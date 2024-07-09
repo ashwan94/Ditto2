@@ -36,8 +36,8 @@
           <Header />
           <Routes>
             <Route path="/" element={<Main />} />
-            <Route path="/SignIn" element={<SignIn />} />
-            <Route path="/SignUp" element={<SignUp />} />
+            <Route path="/signIn" element={<SignIn />} />
+            <Route path="/signUp" element={<SignUp />} />
             <Route path="/mypage" element={<Mypage />} />
             <Route path="/membershipInfo" element={<Membership />} />
             <Route path="/faq" element={<Faq />} />

@@ -106,7 +106,7 @@ export default function SignIn() {
 
                     <div className="text-center mt-10 text-black font-extrabold">
                         아직 계정이 없으신가요?
-                        <Link to="/SignUp" className="sj hk xj rj ob "
+                        <Link to="/signUp" className="sj hk xj rj ob "
                               style={{color: "blue", borderBottom: "1px solid blue"}}> <span
                             className="rundry">회원가입</span></Link>
                     </div>

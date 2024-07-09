@@ -26,4 +26,5 @@ public class MemberVO {
     private String memberDelete;
     private String memberDetailAdd;
     private String memberPostcode;
+    private int bookRentCount; // 대출한 도서 개수
 }

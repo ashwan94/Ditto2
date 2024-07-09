@@ -342,7 +342,8 @@ export default function SignUp() {
                     memberPostcode: memberPostcode,
                     memberAdd: memberAdd,
                     memberDetailAdd: memberDetailAdd,
-                    memberBirth: memberBirth
+                    memberBirth: memberBirth,
+                    memberProfile : "/images/profile/basic_profile.png",
                 }
             }, {
                 headers: {
@@ -352,7 +353,7 @@ export default function SignUp() {
             if (res.status == 200) {
                 alert("회원가입이 완료되었습니다.");
                 // 회원가입 후 로그인 화면으로 이동
-                navigator("/SignIn");
+                navigator("/signIn");
 
             } else {
                 alert("회원가입에 실패했습니다. 다시 시도해주세요.");

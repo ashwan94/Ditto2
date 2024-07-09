@@ -119,7 +119,9 @@ export default function Membership() {
     const goPay = async (data)=> {
         const res = await axios.post("/payment/goPay", data)
         if(res.status === 200){
-            navigator("/mypage")
+            alert("결제가 완료되었습니다. 다시 로그인해주세요.");
+            sessionStorage.removeItem("member");
+            navigator("/signIn");
         }
     }
 

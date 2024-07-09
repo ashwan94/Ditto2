@@ -64,6 +64,9 @@ public class MemberService {
         mapper.adminMemberSubStatus(memberVO);
     }
 
+    public int searchBookRent(String memberId){
+        return mapper.searchBookRent(memberId);
+    }
     public List<MemberVO> adminPageMemberClickListSearch (MemberVO memberId){
         return mapper.adminPageMemberClickListSearch(memberId); // 도서 대여 이력 아이디 클릭시 해당 회원정보 조회
     }

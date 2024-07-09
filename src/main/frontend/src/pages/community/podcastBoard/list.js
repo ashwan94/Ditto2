@@ -96,7 +96,7 @@ export default function List () {
     const checkMember = (boardInfo) => {
         if(!memberId){
             alert("로그인 후 이용 가능합니다.");
-            navigator("/SignIn")
+            navigator("/signIn")
         }else{
             if(memberId.memberSub === 'Y'){
                 goLive(boardInfo);
@@ -118,13 +118,15 @@ export default function List () {
                 }
                 const res = await axios.post("/podcastBoard/update", data)
                 if(res.status === 200){
-                    window.location.href = `https://192.168.0.175:3000?nickName=${encodeURI(memberId.memberNickname)}&boardTitle=${encodeURI(e.podcastTitle)}&podcastBoardNo=${e.podcastBoardNo}`
+                    // alert("방송 시작 성공")
+                    window.location.href = `https://192.168.0.175:3001?nickName=${encodeURI(memberId.memberNickname)}&boardTitle=${encodeURI(e.podcastTitle)}&podcastBoardNo=${e.podcastBoardNo}`
                 }
             }
         }else{
             // 방송 진행 중인지 아닌지 판별
             if(e.onair === 'LIVE'){
-                window.location.href = `https://192.168.0.175:3000?nickName=${encodeURI(memberId.memberNickname)}&boardTitle=${encodeURI(e.podcastTitle)}&podcastBoardNo=${e.podcastBoardNo}`
+                // alert("라이브 방송 중입니다.");
+                window.location.href = `https://192.168.0.175:3001?nickName=${encodeURI(memberId.memberNickname)}&boardTitle=${encodeURI(e.podcastTitle)}&podcastBoardNo=${e.podcastBoardNo}`
             }else{
                 alert("방송 준비 중입니다. 잠시만 기다려주세요.");
             }
@@ -134,9 +136,13 @@ export default function List () {
     const checkAdd = () => {
         if(!memberId){
             alert("로그인 후 이용 가능합니다.")
-            navigator("/SignIn")
+            navigator("/signIn")
         }else{
-            setClose(true);
+            if(memberId.memberSub === 'Y'){
+                setClose(true);
+            }else{
+                alert("멤버십 가입이 필요한 서비스입니다!");
+            }
         }
     }
 
@@ -213,7 +219,7 @@ export default function List () {
                         src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSC4Fg7lReTSEUCcSPBbzNa7fhipRxY0BgAgg&s"
                         className="w-48 py-5"
                         style={{display: "flex", margin: "auto"}}/>
-                    팟캐스트
+                    하브루타
                 </div>
                 <div className="relative">
                     {close

@@ -58,13 +58,6 @@ public class FileController {
             Path filePath = uploadPath.resolve(uuidFileName);
             Files.copy(file.getInputStream(), filePath);
 
-            // 파일 정보 확인
-            log.info("File name : {}", uuidFileName);                        // UUID 로 변환된 파일 이름
-            log.info("File original name : {}", file.getOriginalFilename()); // 원본 파일명
-            log.info("File path : {}", uploadPath);                          // 파일 저장 경로(Server에 저장됨)
-            log.info("File size : {}", file.getSize() + " bytes");           // 파일 크기
-            log.info("File type : {}", file.getContentType());               // 파일 확장자명
-
             // DB 에 파일 정보 저장
             // fileNo, createData 는 default 이므로 VO 에서 아래 전용 생성자를 따로 만들어줌
             service.registerFile(new FileVO(

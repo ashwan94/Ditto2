@@ -76,7 +76,6 @@ public class NoticeBoardController {
     // 공지 등록
     @GetMapping("/announcement")
     public void goAnnouncement(@RequestParam int noticeBoardNo){
-        log.info("공지 번호 : {}", noticeBoardNo);
         noticeBoardService.goAnnouncement(noticeBoardNo);
     }
 }

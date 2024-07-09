@@ -23,7 +23,6 @@ public class SeatController {
 
     @PostMapping("/reservate")
     public void goReservate(@RequestParam int seatNo){
-        log.info("수신 좌석 번호 : {}", seatNo);
         service.goReservate(seatNo);
     }
 }

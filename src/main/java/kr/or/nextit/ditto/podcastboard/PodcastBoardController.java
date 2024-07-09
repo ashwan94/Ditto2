@@ -64,7 +64,6 @@ public class PodcastBoardController {
 
     @PostMapping("/update")
     public void updatePost(@RequestBody PodcastBoardVO vo) {
-        log.info("수정 정보 : {}", vo);
         podcastBoardService.updatePost(vo);
     }
 

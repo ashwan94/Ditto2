@@ -29,6 +29,7 @@ public interface MemberMapper {
 
     // 회원 탈퇴
     void deleteMember(String memberId);
+    int searchBookRent(String memberId); // 탈퇴 전 대출 도서 있는지 조회
     List<MemberVO> adminPageMemberClickListSearch(MemberVO memberId); // 도서대여 이력에서 회원 아이디클릭시 해당 회원정보조회
     List<MemberVO> adminPageSearchMemberIdData(String searchWord); // 멤버아이디 타입 키워드로 검색
 

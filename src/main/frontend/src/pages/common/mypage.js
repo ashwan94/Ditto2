@@ -19,6 +19,7 @@ export default function Mypage() {
     const [memberPostcode, setMemberPostcode] = useState("") // 회원 우편번호
     const [memberDetailAdd, setMemberDetailAdd] = useState("") // 회원 상세주소
     const [showBookRentalList, setShowBookRentalList] = useState([]) // 도서 대여 내역 리스트
+    const [showBookRentalListCount, setShowBookRentalListCount] = useState(0) // 도서 대여 내역 개수
     const [bookNo, setBookNo] = useState(0); // 책 번호
     const [rentNo, setRentNo] = useState(0); // 렌트 번호
     const [prevProfile, setPrevProfile] = useState(null); // 프로필 이미지(미리보기)
@@ -115,6 +116,18 @@ export default function Mypage() {
                 }
             })
             setShowBookRentalList(resData.data)// 책 대여 이력 리스트에 담기
+
+            // 회원탈퇴 전 대출 도서 있는지 체크
+            let rentNum = 0;
+            for(let i of resData.data){
+                if(i.bookRent === 'Y'){
+                    rentNum = rentNum + 1;
+                    setShowBookRentalListCount(rentNum);
+                }
+            }
+            if(rentNum === 0){
+                setShowBookRentalListCount(0);
+            }
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -341,7 +354,7 @@ export default function Mypage() {
             }
             setDuplicatedNickname(false); // 현재이름과 같을때 사용가능하게
         } catch (error) {
-            console.error("닉네임 에러야! ", error);
+            console.error("닉네임 에러! ", error);
         }
 
     }
@@ -355,24 +368,27 @@ export default function Mypage() {
     // 탭변경을 위한 useState
     const [activeTab, setActiveTab] = useState('tab1');
 
-
     // 회원탈퇴 버튼 이벤트
     const deleteMember = async () => {
         if(window.confirm("회원 탈퇴 하시겠습니까?")){
-            const res = await axios.post("/deleteMember", null,{
-                params: {
-                    memberId: memberId
-                }// 아이디
-            });
+            if(showBookRentalListCount === 0){
+                const res = await axios.post("/deleteMember", null, {
+                    params: {
+                        memberId: memberId
+                    }// 아이디
+                });
 
-            if (res.status == 200) {
-                alert("회원 탈퇴 성공 !")
-                // 세션에 저장된 값 삭제
-                sessionStorage.removeItem("member")
-                // 메인 페이지로 이동
-                navigator("/");
-            } else {
-                alert("회원 탈퇴 실패")
+                if (res.status == 200) {
+                    alert("회원탈퇴가 완료되었습니다.")
+                    // 세션에 저장된 값 삭제
+                    sessionStorage.removeItem("member")
+                    // 메인 페이지로 이동
+                    navigator("/");
+                } else {
+                    alert("회원 탈퇴 실패")
+                }
+            }else{
+             alert("대출 중인 도서가 있습니다. 반납 후 다시 시도해주세요.")
             }
         }
     }

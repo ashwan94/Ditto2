@@ -7,11 +7,11 @@ export default function AdminPage(){
     const [memberList, setMemberList] = useState([]) // 회원 정보 리스트
     const [freeBoardList, setFreeBoardList] = useState([])// 자유게시판 리스트
     const [bookRentList, setBookRentList] = useState([]) // 도서 대여 이력 리스트
-    const [podcastList, setPodcastList] = useState([]) // 팟캐스트 리스트
+    const [podcastList, setPodcastList] = useState([]) // 하브루타 리스트
     const [showMemberList, setShowMemberList] = useState(false) // 회원 정보 화면표시
     const [showFreeBoardList, setShowFreeBoardList] = useState(false) // 자유게시판 화면표시
     const [showBookList, setShowBookList] = useState(false) // 도서 대여 이력 화면표시
-    const [showPodcastList, setShowPodcastList] = useState(false) // 팟캐스트 화면표시
+    const [showPodcastList, setShowPodcastList] = useState(false) // 하브루타 화면표시
     const [searchType, setSearchType] = useState("아이디") // 회원 정보 검색타입
     const [searchWord, setSearchWord] = useState("") // 회원 정보 검색키워드
     const [memberSubChangeData, setMemberSubChangeData] = useState("Y") // 멤버십 상태 변경용
@@ -82,7 +82,7 @@ export default function AdminPage(){
         }
     }
 
-    // 관리자 페이지 팟캐스트 리스트 조회
+    // 관리자 페이지 하브루타 리스트 조회
     const getPodcastData = async () => {
         try {
             const res = await axios.post("/podcastBoard/adminPodcast");
@@ -90,6 +90,16 @@ export default function AdminPage(){
         } catch (error) {
             console.error("도서 대여 이력조회 에러", error);
         }
+    }
+
+    // 하브루타 - LIVE-TIME 숫자 변환
+    function calculateTimeDifference(previousDate, currentDate) {
+        const previousTimestamp = new Date(previousDate);
+        const currentTimestamp = new Date(currentDate);
+
+        const differenceInMilliseconds = currentTimestamp - previousTimestamp;
+        const differenceInHours = differenceInMilliseconds / (1000 * 60 * 60);
+        return differenceInHours;
     }
 
 
@@ -181,7 +191,7 @@ export default function AdminPage(){
         }
     }
 
-    // 팟캐스트 검색요청
+    // 하브루타 검색요청
     const searchPodcastList = async () => {
         try {
             const res = await axios.post("/podcastBoard/adminPodcast",{
@@ -195,7 +205,7 @@ export default function AdminPage(){
             setPodcastList(res.data)
 
         } catch (error) {
-            console.error("팟캐스트 리스트 조회 에러", error);
+            console.error("하브루타 리스트 조회 에러", error);
         }
     }
 
@@ -426,7 +436,7 @@ export default function AdminPage(){
         searchBtn();
     }
 
-    // 팟캐스트 활성화 비활성화 업데이트
+    // 하브루타 활성화 비활성화 업데이트
     const updatePodcastStatus = async (no,sts) => {
         try {
             const res = await axios.post("/podcastBoard/updatePodcastStatus",{
@@ -434,12 +444,12 @@ export default function AdminPage(){
                 status : sts
             })
         }catch (error){
-            console.log("팟캐스트 리스트 업데이트 에러", error)
+            console.log("하브루타 리스트 업데이트 에러", error)
         }
         getPodcastData();
     }
 
-    //팟캐스트 리스트 총시간순 정렬
+    //하브루타 리스트 총시간순 정렬
     const orderByPodcastTime = async () => {
         if (podcastOrder == "ASC"){
             setPodcastOrder("DESC")
@@ -452,7 +462,7 @@ export default function AdminPage(){
             });
             setPodcastList(res.data)
         } catch (error) {
-            console.error("팟캐스트 리스트 오름차순 정렬 조회 에러", error);
+            console.error("하브루타 리스트 오름차순 정렬 조회 에러", error);
         }
     }
 
@@ -506,7 +516,7 @@ export default function AdminPage(){
                                     setSearchWord("");
                                     setSearchType("아이디");
                                 }}
-                                className={`btn mt-1 text-lg leading-6 mx-3 ${showPodcastList ? 'text-blue-600' : 'text-gray-600'}`}>팟캐스트</span>
+                                className={`btn mt-1 text-lg leading-6 mx-3 ${showPodcastList ? 'text-blue-600' : 'text-gray-600'}`}>하브루타</span>
                             {showMemberList ? (
                                 <label className="float-right">
                                     <select onChange={searchTypeOnChangeHandler}>
@@ -694,16 +704,14 @@ export default function AdminPage(){
                                     ) : (<td className="text-red text-center" colSpan="7">검색된 정보가 없습니다.</td>)}
                                 </table>
                             ) : showPodcastList ? (
-                                // 팟캐스트 리스트
+                                // 하브루타 리스트
                                 <table className="table-auto w-full border-collapse border border-gray-800">
                                     <tr className="text-center">
                                         <td className="border border-gray-800 px-4 py-2">번호</td>
                                         <td className="border border-gray-800 px-4 py-2">제목</td>
                                         <td className="border border-gray-800 px-4 py-2">아이디</td>
                                         <td className="border border-gray-800 px-4 py-2">방송생성일</td>
-                                        <td className="border border-gray-800 px-4 py-2 text-purple-700"><button onClick={orderByPodcastTime}>총 방송시간</button></td>
                                         <td className="border border-gray-800 px-4 py-2">ONAIR</td>
-                                        <td className="border border-gray-800 px-4 py-2">조회수</td>
                                         <td className="border border-gray-800 px-4 py-2">삭제</td>
                                     </tr>
                                     {/* 도서대여 이력이 한개이상 존재 할때나옴 */}
@@ -714,7 +722,7 @@ export default function AdminPage(){
                                                     <td className="border border-gray-800 px-4 py-2">{v.podcastBoardNo}</td>
                                                     <td className="border border-gray-800 px-4 py-2">{v.podcastTitle}</td>
                                                     <td className="border border-gray-800 px-4 py-2">{v.memberId}</td>
-                                                    <td className="border border-gray-800 px-4 py-2">{new Date(v.modifyDate).toLocaleString('ko-kr', {
+                                                    <td className="border border-gray-800 px-4 py-2">{new Date(v.createDate).toLocaleString('ko-kr', {
                                                         year:"numeric",
                                                         month: "long",
                                                         day: "numeric",
@@ -723,9 +731,7 @@ export default function AdminPage(){
                                                         second:"2-digit",
                                                         hour12:false
                                                     })}</td>
-                                                    <td className="border border-gray-800 px-4 py-2">{v.liveTime}</td>
                                                     <td className="border border-gray-800 px-4 py-2">{v.onair}</td>
-                                                    <td className="border border-gray-800 px-4 py-2">{v.hits}</td>
                                                     <td className="border border-gray-800 px-4 py-2">
                                                         <button className={`${v.status == 'Y' ? "text-blue-500" : "text-red-500"}`} onClick={() => updatePodcastStatus(v.podcastBoardNo,v.status)}>{v.status}</button>
                                                     </td>

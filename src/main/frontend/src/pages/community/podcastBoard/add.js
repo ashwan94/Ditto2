@@ -17,19 +17,24 @@ export default function PodcastBoardAdd({goClose, close, memberId}) {
     };
 
     const goRegister = async () => {
-        if(title){
-            const data = {
-                podcastTitle : title,
-                memberId : memberId.memberId,
-            }
-            const res = await axios.post("/podcastBoard/register", data)
-            if(res.status === 200){
-                goClose(!close);
+        if(memberId){
+            if(title){
+                const data = {
+                    podcastTitle : title,
+                    memberId : memberId.memberId,
+                }
+                const res = await axios.post("/podcastBoard/register", data)
+                if(res.status === 200){
+                    goClose(!close);
+                }
+            }else{
+                alert("제목을 입력해주세요.");
+                titleRef.current.focus();
             }
         }else{
-            alert("제목을 입력해주세요.");
-            titleRef.current.focus();
+            alert("멤버십 구독이 필요합니다.");
         }
+
     }
 
     // 로그인 되지 않았을 경우 로그인 후 글쓰기 진입

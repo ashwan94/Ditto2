@@ -5,6 +5,7 @@ import kr.or.nextit.ditto.file.FileController;
 import kr.or.nextit.ditto.common.SearchVO;
 import kr.or.nextit.ditto.freeboard.FreeBoardVO;
 import kr.or.nextit.ditto.rent.RentVO;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.nurigo.sdk.NurigoApp;
@@ -57,6 +58,15 @@ public class MemberController {
         String memberId = payload.get("memberId");
         MemberVO member = service.searchMemberInfo(memberId);
         return member;
+    }
+
+    // 마이페이지 회원탈퇴 전 대출 도서 있는지 체크
+    @PostMapping("/searchBookRent")
+    public int searchBookRent(@RequestParam String memberId){
+        log.info("회원 아이디 : {}", memberId);
+        int result = service.searchBookRent(memberId);
+        log.info("도서 조회 : {}", result);
+        return result;
     }
 
     // 마이페이지 비밀번호 수정

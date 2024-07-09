@@ -38,7 +38,9 @@
             a.FREE_BOARD_NO = c.BOARD_NO
         AND
             c.STATUS = 'Y'
-        INNER JOIN
+        AND
+            c.TYPE = "FREE_BOARD"
+        LEFT OUTER JOIN
             MEMBER m
         ON
             a.MEMBER_ID = m.MEMBER_ID
@@ -65,6 +67,7 @@
         GROUP BY
             a.FREE_BOARD_NO,
             a.MEMBER_ID,
+            m.MEMBER_NICKNAME,
             a.FREE_TITLE,
             a.FREE_CONTENT,
             a.HITS,

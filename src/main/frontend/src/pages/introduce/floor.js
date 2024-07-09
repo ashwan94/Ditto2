@@ -60,14 +60,14 @@ export default function Floor() {
 
                     {/* 상단 기업 이미지 갤러리 섹션 */}
                     <div
-                        className="mt-32 mb- bg-blue-950 text-white py-10 px-6 rounded-xl border-black border-2 text-center"
+                        className="mt-32 ms-72 bg-blue-950 text-white py-10 px-6 rounded-xl border-black border-2 flex justify-center items-center"
                         style={{
                             fontSize: "50px", width: "60%", display: "inline-flex",
                             alignItems: "center",
                             textAlign: "center"
                         }}>
                         <img src="https://cdn-icons-png.flaticon.com/512/8347/8347452.png" className="w-48 h-40"/>
-                        <p>한석줍쇼와 함께한 기업들</p>
+                        <p>한석줍쇼와 함께 하는 기업들</p>
                     </div>
                     <section className="image-gallery mt-12  border-t border-b border-gray-200 border-dashed">
                         <Slider {...settings}>

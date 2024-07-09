@@ -7,7 +7,7 @@ export default function GPT ({mergeContent, callbackGPT}){
     const [loading, setLoading] = useState(false);
     const [gptAnswer, setGptAnswer] = useState(""); // GPT 로부터 받은 답변(부모 comp로 전달)
 
-    const apiKey = 'sk-proj-cPH3qqb2ROvEzpM4EXB1T3BlbkFJAZkfW4kVuaEv1vcA8tvm';
+    const apiKey = 'sk-proj-V52x458uSDewH9evylz3T3BlbkFJW7NSYk1Y7ePdI9gH7OM3';
     const apiEndpoint = 'https://api.openai.com/v1/chat/completions';
 
     const addMessage = (sender, message) => {

@@ -1,12 +1,26 @@
-import React, { useState, useEffect } from "react";
-import {Link, useNavigate} from "react-router-dom";
+import React, { useState, useEffect} from "react";
+import {Link, useLocation, useNavigate} from "react-router-dom";
 
 const Header = () => {
   const [darkMode, setDarkMode] = useState(true);
   const [stickyMenu, setStickyMenu] = useState(false);
   const [navigationOpen, setNavigationOpen] = useState(false);
   const [loginLog, setLoginLog] = useState(sessionStorage.getItem("member")); // Session 에서 가져온 로그인된 유저 정보
+  const [key, setKey] = useState(0);
   const navigator = useNavigate();
+  const location = useLocation();
+
+  // 페이지가 바뀔때마다 sessionStorage 를 조회해서 로그인된 회원정보를 기준으로 리렌더링
+  useEffect(() => {
+    const sessionData = sessionStorage.getItem("member");
+    if(sessionData){
+      setLoginLog(JSON.parse(sessionData));
+    }else{
+      // 화상회의 종료 시 자동 로그아웃되는 문제가 있음
+      setLoginLog("");
+    }
+  }, [location]);
+
   useEffect(() => {
     const savedDarkMode = JSON.parse(localStorage.getItem("darkMode"));
     if (savedDarkMode !== null) {
@@ -21,27 +35,21 @@ const Header = () => {
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [loginLog]);
-
-  // 로그인 상태 변화 감지 useEffect
-  useEffect(() => {
-    setLoginLog(sessionStorage.getItem("member"))
-  }, [loginLog]);
-
+  }, []);
 
   useEffect(() => {
     localStorage.setItem("darkMode", JSON.stringify(darkMode));
   }, [darkMode]);
 
-
   // 로그아웃
   const goLogout = () => {
     sessionStorage.removeItem("member");
-    setLoginLog(sessionStorage.getItem("member")); // page rendering 을 위한 hook
+    setLoginLog(""); // page rendering 을 위한 hook
     navigator("/");
   }
 
   return (
+
     <header
       className={`g s r vd ya cj rundry text-xl ${stickyMenu ? "hh sm _k dj bl ll" : ""}`}
     >
@@ -130,7 +138,7 @@ const Header = () => {
                   <li><Link to="/community/noticeBoard/list" className="xl">공지사항</Link></li>
                   <li><Link to="/community/freeBoard/list" className="xl">자유게시판</Link></li>
                   <li><Link to="/community/relayBoard/list" className="xl">릴레이 소설</Link></li>
-                  <li><Link to="/community/podcastBoard/list" className="xl">팟캐스트</Link></li>
+                  <li><Link to="/community/podcastBoard/list" className="xl">하브루타</Link></li>
                 </ul>
               </li>
               <li className="c i" x-data="{ dropdown: false }">
@@ -188,15 +196,18 @@ const Header = () => {
                 <img className="xc nm" src="images/icon-moon.svg" alt="Moon" />
               </label>
             </div>
-
-            {sessionStorage.getItem("member") ?
+            {loginLog ?
                 <div style={{display: 'flex', justifyContent: 'space-between'}}>
                   <button className="lk gh dk rg tc wf xf _l gi hi font-extrabold" onClick={goLogout}>로그아웃</button>
-                  {JSON.parse(sessionStorage.getItem("member")).memberAdmin == "MEMBER" ?
-                      (<Link to="/mypage" className="lk gh dk rg tc wf xf _l gi hi font-extrabold mx-3">마이페이지</Link>) : (<Link to="/adminPage" className="lk gh dk rg tc wf xf _l gi hi font-extrabold mx-3">관리자</Link>) }
+                  {loginLog.memberAdmin === "MEMBER"
+                      ?
+                      <Link to="/mypage" className="lk gh dk rg tc wf xf _l gi hi font-extrabold mx-3">마이페이지</Link>
+                      :
+                      <Link to="/adminPage" className="lk gh dk rg tc wf xf _l gi hi font-extrabold mx-3">관리자</Link>
+                  }
                 </div>
                 :
-                <Link to="/SignIn" className="lk gh dk rg tc wf xf _l gi hi font-extrabold">로그인</Link>
+                <Link to="/signIn" className="lk gh dk rg tc wf xf _l gi hi font-extrabold">로그인</Link>
             }
           </div>
         </div>
